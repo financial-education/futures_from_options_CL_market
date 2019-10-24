@@ -70,7 +70,120 @@
 
 	<section>
 	  <h3>Pull Data</h3>
-	  
+	  <pre><code data-trim data-noescape>
+library(IBrokers)
+
+## pull futures
+con1 <- twsConnect(1)
+
+future <- twsFuture(symbol = "CL", exch = "NYMEX", expiry = "201912")
+reqMktData(con1, future, file='future.dat')
+
+	  </code>
+	  </pre>
+	</section>
+
+	<section>
+	  <h3>Data</h3>
+	  <pre><code data-trim data-noescape>
+<20191021 11:38:48.765280> id=1 symbol=CL  6 1 37 53.38999939 0 0 
+<20191021 11:38:48.766103> id=1 symbol=CL optionHistoricalVol: 0.39313417004731965 NA 
+<20191021 11:38:48.766651> id=1 symbol=CL optionImpliedVol: 0.33602704095468894 
+<20191021 11:38:48.767121> id=1 symbol=CL lastTimestamp: 1571672328 
+<20191021 11:38:48.767576> id=1 symbol=CL lastPrice: 53.39 
+<20191021 11:38:48.768014> id=1 symbol=CL lastSize: 4 
+<20191021 11:38:48.768443> id=1 symbol=CL Volume: 338072 
+<20191021 11:38:48.768872> id=1 symbol=CL highPrice: 54.17 
+<20191021 11:38:48.769371> id=1 symbol=CL lowPrice: 52.85 
+<20191021 11:38:48.769932> id=1 symbol=CL closePrice: 53.87 
+<20191021 11:38:48.770502> id=1 symbol=CL openPrice: 53.83 
+<20191021 11:38:48.771029> id=1 symbol=CL bidPrice: 53.38  bidSize: 36 
+<20191021 11:38:48.771296> id=1 symbol=CL askPrice: 53.39  askSize: 59 
+<20191021 11:38:48.771565> id=1 symbol=CL bidSize: 36 
+<20191021 11:38:48.771793> id=1 symbol=CL askSize: 59 
+<20191021 11:38:48.810714> id=1 symbol=CL optionCallOpenInterest: 600788 
+<20191021 11:38:48.811026> id=1 symbol=CL optionPutOpenInterest: 428717 
+<20191021 11:38:48.811213> id=1 symbol=CL optionImpliedVol: 0.33585248514848365 
+<20191021 11:38:48.811377> id=1 symbol=CL lastPrice: 53.37 
+<20191021 11:38:48.811527> id=1 symbol=CL lastSize: 1 
+<20191021 11:38:48.811677> id=1 symbol=CL Volume: 338110 
+<20191021 11:38:48.811826> id=1 symbol=CL bidPrice: 53.37  bidSize: 7 
+<20191021 11:38:48.811997> id=1 symbol=CL askPrice: 53.38  askSize: 45 
+	    </code>
+	  </pre>
+	</section>
+
+	<section>
+	  <h3>Build Book</h3>
+	  <pre><code data-trim data-noescape>
+	                      bids       offers   last
+2019-10-23 11:54:21.547094    53.22      53.23    53.23
+2019-10-23 11:54:21.548851    53.22      53.24    53.23
+2019-10-23 11:54:21.946665    53.22      53.23    53.23
+2019-10-23 11:54:23.054070    53.22      53.23    53.22
+2019-10-23 11:54:23.058064    53.21      53.23    53.22
+2019-10-23 11:54:23.059530    53.21      53.22    53.22
+2019-10-23 11:54:23.754686    53.21      53.22    53.21
+2019-10-23 11:54:23.855457    53.21      53.22    53.22
+2019-10-23 11:54:24.857491    53.21      53.22    53.21
+2019-10-23 11:54:25.358453    53.20      53.22    53.21
+2019-10-23 11:54:25.358760    53.20      53.21    53.21
+2019-10-23 11:54:25.860630    53.20      53.21    53.20
+2019-10-23 11:54:27.367623    53.19      53.21    53.20
+2019-10-23 11:54:27.465257    53.19      53.20    53.20
+2019-10-23 11:54:27.967622    53.19      53.21    53.20
+2019-10-23 11:54:28.067688    53.19      53.21    53.21
+2019-10-23 11:54:28.070036    53.20      53.21    53.21
+2019-10-23 11:54:29.577260    53.20      53.21    53.20
+	    </code>
+	  </pre>
+	</section>
+
+	<section>
+	  <h3>Create Synthetic Long and Short Futures</h3>
+	  <pre><code data-trim data-noescape>
+price_synthetic_long <- abs(-call$bids + put$offers - 53)
+price_synthetic_short <- abs(call$bids - put$offers + 53)
+       </code>
+	  </pre>
+	</section>
+
+	<section>
+	  <h3>Arbitrage?</h3>
+	  <pre><code data-trim data-noescape>
+                         bid_futures ask_futures  last    syn_long  syn_short
+2019-10-23 12:06:03.749629    53.15      53.16    53.15    53.15     53.07
+2019-10-23 12:06:03.947660    53.15      53.16    53.16    53.15     53.07
+2019-10-23 12:06:04.049619    53.15      53.16    53.15    53.15     53.07
+2019-10-23 12:06:05.151556    53.15      53.16    53.16    53.15     53.07
+2019-10-23 12:06:06.456450    53.15      53.16    53.15    53.15     53.07
+2019-10-23 12:06:07.259382    53.15      53.16    53.16    53.15     53.07
+2019-10-23 12:06:08.160706    53.15      53.16    53.15    53.15     53.07
+2019-10-23 12:06:09.667714    53.15      53.16    53.16    53.15     53.07
+2019-10-23 12:06:09.967227    53.15      53.16    53.15    53.15     53.07
+2019-10-23 12:06:11.974978    53.14      53.16    53.15    53.15     53.07
+2019-10-23 12:06:11.975214    53.14      53.15    53.15    53.15     53.07
+2019-10-23 12:06:12.277513    53.15      53.15    53.15    53.15     53.07
+2019-10-23 12:06:12.278445    53.15      53.16    53.15    53.15     53.07
+2019-10-23 12:06:12.879304    53.15      53.16    53.16    53.15     53.07
+2019-10-23 12:06:12.979618    53.15      53.16    53.15    53.15     53.07
+2019-10-23 12:06:13.780399    53.15      53.16    53.16    53.15     53.07
+2019-10-23 12:06:14.284279    53.15      53.16    53.15    53.15     53.07
+2019-10-23 12:06:15.085625    53.15      53.16    53.16    53.15     53.07
+2019-10-23 12:06:17.995244    53.15      53.16    53.15    53.15     53.07
+2019-10-23 12:06:19.000267    53.15      53.16    53.16    53.15     53.07
+2019-10-23 12:06:19.500770    53.15      53.16    53.15    53.15     53.07
+2019-10-23 12:06:20.304805    53.15      53.16    53.16    53.15     53.07
+2019-10-23 12:06:33.144507    53.15      53.16    53.15    53.15     53.07
+2019-10-23 12:06:34.950300    53.15      53.16    53.16    53.15     53.07
+2019-10-23 12:06:38.423049    53.15      53.16    53.15    53.15     53.07
+2019-10-23 12:06:38.601154    53.15      53.16    53.16    53.15     53.07
+2019-10-23 12:06:40.375118    53.15      53.16    53.15    53.15     53.07
+2019-10-23 12:06:42.982945    53.14      53.16    53.15    53.15     53.07
+2019-10-23 12:06:42.984519    53.14      53.15    53.15    53.15     53.07
+2019-10-23 12:06:46.091542    53.15      53.15    53.15    53.15     53.07	      
+	    </code>
+	  </pre>
 	</section>
 
   <section data-background-image="./code_image.jpg">
@@ -78,27 +191,11 @@
       <iframe src="futures_vs_synthetic.html" height="100%" width="100%"></iframe>
     </div>
   </section>
-  
-
-	<section>
-	  <h3></h3>
-
-	</section>
-
-
-<!-- Insert App -->
-<!-- <section data-background-image="./code_image.jpg"> -->
-<!--   <div class="stretch"> -->
-<!--     <iframe src="https://micfm.shinyapps.io/limit_order_book_app1/" height="100%" width="100%"></iframe> -->
-<!--   </div> -->
-<!-- </section> -->
-<!-- </section> -->
-
 
 <section>
 <h3>Credits and Collaboration</h3>
 
-<p align="left">Click the following links to see the <a href="">code</a>, <a href="">authors of this presentation</a>.</p>
+<p align="left">Click the following links to see the <a href="https://github.com/financial-education/futures_from_options_CL_market">code</a>, <a href="https://github.com/financial-education/futures_from_options_CL_market/graphs/contributors">authors of this presentation</a>.</p>
 
 <p align="left">If you would like to make any additions or corrections to this presentation, visit our <a href="https://github.com/FinancialMarkets/5MinuteFinance#how-to-contribute">GitHub repository page</a> to learn more about how to contribute.</p>
 
